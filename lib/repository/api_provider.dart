@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
-import 'package:pinjollist/models/company.dart';
-import 'package:pinjollist/utils/logging_interceptor.dart';
+import 'package:portalberita/common/const.dart';
+import 'package:portalberita/models/news.dart';
+import 'package:portalberita/utils/logging_interceptor.dart';
 
-class CompanyApiProvider {
+class ApiProvider {
   Dio get dio => _dio();
   Dio _dio() {
     final options = BaseOptions(
-      baseUrl: "https://pinjollist.now.sh/api/",
-      connectTimeout: 5000,
-      receiveTimeout: 3000,
+      baseUrl: "https://newsapi.org/v2/everything",
+      connectTimeout: 20000,
+      receiveTimeout: 50000,
       contentType: "application/json;charset=utf-8",
     );
 
@@ -19,10 +20,10 @@ class CompanyApiProvider {
     return dio;
   }
 
-  Future<CompaniesResponse> getCompanies() async {
+  Future<NewsResponse> getNews(String keyword, String page) async {
     try {
-      Response response = await dio.get("companies");
-      return CompaniesResponse.fromJson(response.data);
+      Response response = await dio.get("?q=$keyword&apiKey=${Const.apiKeyNews}&page=$page&pageSize=20");
+      return NewsResponse.fromJson(response.data);
     } catch (error, stacktrace) {
       throw Exception("Exception occured: $error stackTrace: $stacktrace");
     }
