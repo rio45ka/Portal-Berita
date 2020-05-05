@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portalberita/ui/news_list/news_list_page.dart';
+import 'package:portalberita/ui/news_list_infinity/news_list_infinity_page.dart';
 import 'package:portalberita/utils/utils.dart';
 
 class HomePage extends StatefulWidget {
@@ -95,6 +96,6 @@ class _HomePageState extends State<HomePage> {
 
   void _openPageNewsList() {
     _formKey.currentState.save();
-    pageOpen(context, NewsListPage(keywordNews: _searchKeyword));
+    pageOpen(context, NewsListInfinityPage(keywordNews: _searchKeyword));
   }
 }

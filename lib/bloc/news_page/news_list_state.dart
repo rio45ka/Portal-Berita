@@ -7,13 +7,11 @@ abstract class NewsListState extends Equatable {
   List<Object> get props => [];
 }
 
-class NewsListInitial extends NewsListState {
-  
-}
+class NewsListInitial extends NewsListState {}
 
 class NewsListLoadingProgress extends NewsListState {}
 
-class NewsListLoadSuccess extends NewsListState{
+class NewsListLoadSuccess extends NewsListState {
   final NewsResponse response;
 
   const NewsListLoadSuccess({@required this.response})

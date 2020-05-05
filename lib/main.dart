@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:portalberita/bloc/bloc/news_list_bloc.dart';
+import 'package:portalberita/bloc/news_page/news_list_bloc.dart';
+import 'package:portalberita/bloc/news_page_infinity/news_list_bloc.dart';
 import 'package:portalberita/ui/home/home_page.dart';
 
 void main() {
-  runApp(BlocProvider<NewsListBloc>(
-    create: (context) => NewsListBloc(),
-    child: MyApp(),
-  ));
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<NewsListBloc>(
+          create: (context) => NewsListBloc(),
+        ),
+        BlocProvider<NewsListInfinityBloc>(
+          create: (context) => NewsListInfinityBloc(),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

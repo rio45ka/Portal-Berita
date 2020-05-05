@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:portalberita/bloc/bloc/news_list_bloc.dart';
+import 'package:portalberita/bloc/news_page/news_list_bloc.dart';
 import 'package:portalberita/common/loading.dart';
 import 'package:portalberita/common/widget/item_news_widget.dart';
 import 'package:portalberita/models/news.dart';
@@ -15,9 +15,6 @@ class NewsListPage extends StatefulWidget {
 }
 
 class _NewsListPageState extends State<NewsListPage> {
-  List<Article> articles = [];
-  final _newsBloc = NewsListBloc();
-
   @override
   void initState() {
     BlocProvider.of<NewsListBloc>(context).add(FetchNews(widget.keywordNews, "1"));
@@ -33,9 +30,9 @@ class _NewsListPageState extends State<NewsListPage> {
       body: BlocBuilder<NewsListBloc, NewsListState>(
         builder: (context, state) {
           if (state is NewsListInitial) {
-            return Loading(message: "Please Wait . . .");
+            return Loading(message: "Mohon tunggu . . .");
           } else if (state is NewsListLoadingProgress) {
-            return Loading(message: "Fetching Data . . .");
+            return Loading(message: "Mengambil Data . . .");
           } else if (state is NewsListLoadSuccess) {
             return _buildListNews(state.response.articles);
           } else if (state is NewsListLoadFailure) {
@@ -60,7 +57,7 @@ class _NewsListPageState extends State<NewsListPage> {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Error occured!"),
+        Text("Terjadi kesalahan!"),
       ],
     ));
   }
