@@ -22,7 +22,7 @@ class ApiProvider {
 
   Future<NewsResponse> getNews(String keyword, String page) async {
     try {
-      Response response = await dio.get("?q=$keyword&apiKey=${Const.apiKeyNews}&page=$page&pageSize=20");
+      Response response = await dio.get("?q=$keyword&apiKey=${Const.apiKeyNews}&page=$page&pageSize=5");
       return NewsResponse.fromJson(response.data);
     } catch (error, stacktrace) {
       throw Exception("Exception occured: $error stackTrace: $stacktrace");

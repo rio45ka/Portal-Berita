@@ -12,23 +12,13 @@ class NewsListInitial extends NewsListInfinityState {}
 class NewsListLoading extends NewsListInfinityState {}
 
 class NewsListLoaded extends NewsListInfinityState {
-  final List<Article> articles;
-  final bool hasReachedMax;
+  final NewsResponse response;
 
-  const NewsListLoaded({this.articles, this.hasReachedMax});
+  const NewsListLoaded({@required this.response})
+      : assert(response != null);
 
   @override
-  List<Object> get props => [articles, hasReachedMax];
-
-  NewsListLoaded copyWith({
-    List<Article> list,
-    bool hasReachedMax,
-  }) {
-    return NewsListLoaded(
-      articles: list ?? this.articles,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-    );
-  }
+  List<Object> get props => [response];
 }
 
 class NewsListLoadFailure extends NewsListInfinityState {}

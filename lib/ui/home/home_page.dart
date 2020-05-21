@@ -96,6 +96,6 @@ class _HomePageState extends State<HomePage> {
 
   void _openPageNewsList() {
     _formKey.currentState.save();
-    pageOpen(context, NewsListInfinityPage(keywordNews: _searchKeyword));
+    pageOpen(context, NewsListPage(keywordNews: _searchKeyword));
   }
 }

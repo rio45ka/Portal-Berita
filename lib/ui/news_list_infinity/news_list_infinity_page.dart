@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portalberita/bloc/news_page_infinity/news_list_bloc.dart';
-import 'package:portalberita/common/widget/bottom_loader_widget.dart';
+import 'package:portalberita/common/loading.dart';
 import 'package:portalberita/common/widget/item_news_widget.dart';
 import 'package:portalberita/models/news.dart';
 
@@ -17,28 +17,44 @@ class NewsListInfinityPage extends StatefulWidget {
 
 class _NewsListInfinityPageState extends State<NewsListInfinityPage> {
   ScrollController _scrollController = ScrollController();
-  final _scrollThreshold = 200.0;
+  bool isLoadMore = false;
+  int page = 1;
   List<Article> articles = [];
   NewsListInfinityBloc _bloc;
 
   @override
   void initState() {
     _bloc = BlocProvider.of<NewsListInfinityBloc>(context);
-    _scrollController.addListener(_onScroll);
-    _bloc.add(FetchNews(widget.keywordNews, ""));
+    _bloc.add(FetchNews(widget.keywordNews, page.toString()));
     super.initState();
-    // _scrollController.addListener(() {
-    //   if (_scrollController.position.pixels ==
-    //       _scrollController.position.maxScrollExtent) {
-    //     print("end");
-    //   }
-    // });
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!isLoadMore) {
+          isLoadMore = true;
+          _bloc.add(FetchNews(widget.keywordNews, page.toString()));
+          print("end");
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Widget _buildProgressIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity: isLoadMore ? 1.0 : 00,
+          child: new CircularProgressIndicator(),
+        ),
+      ),
+    );
   }
 
   @override
@@ -48,42 +64,50 @@ class _NewsListInfinityPageState extends State<NewsListInfinityPage> {
       appBar: AppBar(title: Text(widget.keywordNews)),
       body: BlocBuilder<NewsListInfinityBloc, NewsListInfinityState>(
         builder: (context, state) {
-          if (state is NewsListLoadFailure) {
-            return Center(
-              child: Text('Gagal mengambil data artikel'),
-            );
+          if (state is NewsListInitial) {
+            return Loading(message: "Mohon tunggu . . .");
+          // } else if (state is NewsListLoading) {
+          //   if (articles.isEmpty) {
+          //     return Loading(message: "Mengambil Data . . .");
+          //   }
+          //   return Container(color: Colors.transparent);
+          } else if (state is NewsListLoaded) {
+            articles.addAll(state.response.articles);
+            page += 1;
+            isLoadMore = false;
+            return _buildListNews();
+          } else if (state is NewsListLoadFailure) {
+            isLoadMore = false;
+            return _buildErrorWidget();
+          } else {
+            return Loading(message: "Loading");
           }
-          if (state is NewsListLoaded) {
-            if (state.articles.isEmpty) {
-              return Center(
-                child: Text('Tidak ada artikel'),
-              );
-            }
-            return ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                return index >= state.articles.length
-                    ? BottomLoader()
-                    : ItemNewsWidget(article: state.articles[index]);
-              },
-              itemCount: state.hasReachedMax
-                  ? state.articles.length
-                  : state.articles.length + 1,
-              controller: _scrollController,
-            );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
         },
       ),
+      resizeToAvoidBottomPadding: false,
     );
   }
 
-  void _onScroll() {
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.position.pixels;
-    if (maxScroll - currentScroll <= _scrollThreshold) {
-      _bloc.add(FetchNews(widget.keywordNews, ""));
-    }
+  Widget _buildListNews() {
+    return ListView.builder(
+      itemCount: articles.length + 1,
+      itemBuilder: (context, index) {
+        if (index == articles.length) {
+          return _buildProgressIndicator();
+        } else
+          return ItemNewsWidget(article: articles[index]);
+      },
+      controller: _scrollController,
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Terjadi kesalahan!"),
+      ],
+    ));
   }
 }
